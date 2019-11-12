@@ -44,19 +44,11 @@ RUN sdkmanager "tools" "platform-tools" \
     ; yes | sdkmanager --update --channel=3 \
     ; yes | sdkmanager \
     "platforms;android-${ANDROID_COMPILE_SDK}" \
-    "build-tools;${ANDROID_BUILD_TOOLS}"
-
-# -------------------------------------------------------
-# Install AWS CLI
-RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bundle.zip" \
-    ; unzip /tmp/awscli-bundle.zip -d /tmp/ \
-    ; /tmp/awscli-bundle/install -b /bin/aws \
-    ; export PATH=/bin:$PATH \
-    ; mkdir /.aws \
-    ; touch /.aws/credentials \ 
-    ; touch /.aws/config \
-    ; rm -rf /tmp/*
-
+    "platforms;android-28" \
+    "build-tools;${ANDROID_BUILD_TOOLS}" \
+    "build-tools;28.0.3" \
+    "build-tools;29.0.0"
+    
 # -------------------------------------------------------
 # Set the environment path again
 ENV PATH ${PATH}:${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/
