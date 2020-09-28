@@ -67,3 +67,7 @@ ENV PATH ${PATH}:${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/
 # -------------------------------------------------------
 # Install jq
 RUN echo "Y" | apt install jq
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - \
+    ; sudo apt -y install nodejs \
+    ; npm -g install yarn
