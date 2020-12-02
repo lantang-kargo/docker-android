@@ -48,9 +48,10 @@ RUN sdkmanager "tools" "platform-tools" \
     "platforms;android-28" \
     "build-tools;${ANDROID_BUILD_TOOLS}" \
     "build-tools;28.0.3" \
-    "build-tools;29.0.0" \
-    "ndk;21.0.6113669" \
-    "cmake;10.24988404"
+    "build-tools;29.0.0"
+
+RUN sdkmanager --install "ndk;21.0.6113669" --channel=3;\
+    sdkmanager --install "cmake;10.24988404"
 
 # -------------------------------------------------------
 # Install AWS
