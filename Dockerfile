@@ -9,7 +9,8 @@ FROM openjdk:8-jdk
 ENV ANDROID_COMPILE_SDK=29 \
     ANDROID_CLI_TOOLS=4333796 \
     ANDROID_BUILD_TOOLS=29.0.2 \
-    ANDROID_HOME=/android-sdk-linux
+    ANDROID_HOME=/android-sdk-linux \
+    GCLOUD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-290.0.1-linux-x86_64.tar.gz"
 
 # -------------------------------------------------------
 # Set the Docker root folder as root
@@ -18,7 +19,7 @@ WORKDIR /
 # -------------------------------------------------------
 # Update OS related stuff
 RUN apt --quiet update --yes && \
-    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 jq
 
 # -------------------------------------------------------
 # Download and install the Android SDK
@@ -47,7 +48,9 @@ RUN sdkmanager "tools" "platform-tools" \
     "platforms;android-28" \
     "build-tools;${ANDROID_BUILD_TOOLS}" \
     "build-tools;28.0.3" \
-    "build-tools;29.0.0"
+    "build-tools;29.0.0" \
+    "ndk;21.0.6113669" \
+    "cmake;10.24988404"
 
 # -------------------------------------------------------
 # Install AWS
@@ -61,13 +64,16 @@ RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bu
     ; rm -rf /tmp/*
 
 # -------------------------------------------------------
-# Set the environment path again
-ENV PATH ${PATH}:${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/
-
-# -------------------------------------------------------
-# Install jq
-RUN echo "Y" | apt install jq
-
+# Install yarn
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     ; apt -y install nodejs \
     ; npm -g install yarn
+
+# -------------------------------------------------------
+# Install gcloud (need to do init in pipeline)
+RUN curl -L ${GCLOUD_URL} |tar xvz && \
+    /google-cloud-sdk/install.sh -q
+
+# -------------------------------------------------------
+# Set the environment path again
+ENV PATH ${PATH}:${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/:/google-cloud-sdk/bin
