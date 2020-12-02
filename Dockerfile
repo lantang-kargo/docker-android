@@ -51,7 +51,7 @@ RUN sdkmanager "tools" "platform-tools" \
     "build-tools;29.0.0"
 
 RUN sdkmanager --install "ndk;21.0.6113669" --channel=3;\
-    sdkmanager --install "cmake;10.24988404"
+    sdkmanager --install "cmake;3.10.2.4988404" --channel=3
 
 # -------------------------------------------------------
 # Install AWS
