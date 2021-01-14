@@ -76,5 +76,10 @@ RUN curl -L ${GCLOUD_URL} |tar xvz && \
     /google-cloud-sdk/install.sh -q
 
 # -------------------------------------------------------
+# Install python requirements
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# -------------------------------------------------------
 # Set the environment path again
 ENV PATH ${PATH}:${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/:/google-cloud-sdk/bin
