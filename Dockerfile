@@ -19,7 +19,7 @@ WORKDIR /
 # -------------------------------------------------------
 # Update OS related stuff
 RUN apt --quiet update --yes && \
-    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 jq
+    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 jq python3-pip
 
 # -------------------------------------------------------
 # Download and install the Android SDK
@@ -78,7 +78,7 @@ RUN curl -L ${GCLOUD_URL} |tar xvz && \
 # -------------------------------------------------------
 # Install python requirements
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # -------------------------------------------------------
 # Set the environment path again
