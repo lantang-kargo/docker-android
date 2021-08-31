@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:11-slim-buster
 
 # -------------------------------------------------------
 # Set the environment variables
@@ -7,10 +7,10 @@ FROM openjdk:11
 # Check here for ANDROID_BUILD_TOOLS number
 # https://developer.android.com/studio/releases/build-tools
 ENV ANDROID_COMPILE_SDK=29 \
-    ANDROID_CLI_TOOLS=4333796 \
+    ANDROID_CLI_TOOLS=7583922 \
     ANDROID_BUILD_TOOLS=29.0.2 \
     ANDROID_HOME=/android-sdk-linux \
-    GCLOUD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-290.0.1-linux-x86_64.tar.gz"
+    GCLOUD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-354.0.0-linux-x86_64.tar.gz"
 
 # -------------------------------------------------------
 # Set the Docker root folder as root
@@ -19,17 +19,22 @@ WORKDIR /
 # -------------------------------------------------------
 # Update OS related stuff
 RUN apt --quiet update --yes && \
-    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 jq python3-pip
+    apt --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 jq python3-pip curl
 
 # -------------------------------------------------------
 # Download and install the Android SDK
-RUN wget -q https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_CLI_TOOLS}.zip -O android-sdk-tools.zip \
-    ; unzip -q android-sdk-tools.zip -d ${ANDROID_HOME} \
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CLI_TOOLS}_latest.zip -O android-sdk-tools.zip
+
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools \
+    ; unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools \
+    ; ls ${ANDROID_HOME}/cmdline-tools
+    
+RUN mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/tools\
     ; rm android-sdk-tools.zip
 
 # -------------------------------------------------------
 # Set the environment path
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+ENV PATH ${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/cmdline-tools/tools/bin:${ANDROID_HOME}/platform-tools
 
 # -------------------------------------------------------
 # Accept the Android SDK licenses agreement
@@ -52,17 +57,6 @@ RUN sdkmanager "tools" "platform-tools" \
 
 RUN sdkmanager --install "ndk;21.0.6113669" --channel=3;\
     sdkmanager --install "cmake;3.10.2.4988404" --channel=3
-
-# -------------------------------------------------------
-# Install AWS
-RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bundle.zip" \
-    ; unzip /tmp/awscli-bundle.zip -d /tmp/ \
-    ; /tmp/awscli-bundle/install -b /bin/aws \
-    ; export PATH=/bin:$PATH \
-    ; mkdir /.aws \
-    ; touch /.aws/credentials \ 
-    ; touch /.aws/config \
-    ; rm -rf /tmp/*
 
 # -------------------------------------------------------
 # Install yarn
